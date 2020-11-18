@@ -133,6 +133,25 @@ const login = (req, res) => {
     })
 }
 
+const getUserInfo = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((userById) => {
+      if (userById === null) {
+        throw new NotFoundError('Пользователя нет в базе данных');
+      }
+      res
+        .status(200)
+        .send(userById);
+    })
+
+    .catch(() => {
+      throw new NotFoundError('Пользователя нет в базе данных');
+    })
+
+    .catch(next);
+};
+
+
 module.exports = {
   getUsers,
   getUser,
@@ -140,4 +159,5 @@ module.exports = {
   updateUser,
   updateUserAvatar,
   login,
+  getUserInfo,
 };

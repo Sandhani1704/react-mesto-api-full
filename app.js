@@ -24,13 +24,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/signup', createUser);
 app.post('/signin', login);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5f947b6f7e5bcb276032c34d', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '5f947b6f7e5bcb276032c34d', // вставьте сюда _id созданного в предыдущем пункте пользователя
+//   };
 
-  next();
-});
+//   next();
+// });
 
 // сначала вызовется auth, а затем, если авторизация успешна, routerUsers
 app.use('/', auth, routerUsers);
