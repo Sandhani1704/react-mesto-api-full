@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users.js');
 const routerCards = require('./routes/cards.js');
 const routerNonexistent = require('./routes/nonexistent.js');
+const { login, createUser } = require('./controllers/users.js');
 
 const app = express();
 
@@ -18,9 +19,12 @@ const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// роуты для логина и регистрации
+app.post('/signup', createUser);
+app.post('/signin', login);
+
 app.use((req, res, next) => {
   req.user = {
-    // _id: '5f947b6f7e5bcb276032c34d',
     _id: '5f947b6f7e5bcb276032c34d', // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
 

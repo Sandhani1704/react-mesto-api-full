@@ -27,7 +27,7 @@ const getUser = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar, email, password } = req.body;
+  const { email, password } = req.body;
   bcrypt.hash(password, 10)
     .then(hash => User.create({
       name: 'Жак-Ив Кусто',
@@ -37,7 +37,14 @@ const createUser = (req, res) => {
       password: hash, // записываем хеш в базу
     }))
     // User.create({ name, about, avatar, email, password })
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(200).send({
+      data: {
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      },
+    }))
     .catch((err) => {
       console.log(err);
       if (err.name === 'ValidationError') {
@@ -98,19 +105,26 @@ const updateUserAvatar = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  User.findOne({ email })
+  // User.findOne({ email })
+  //   .then((user) => {
+  //     if (!user) {
+  //       Promise.reject(new Error('Неправильные почта или пароль'));
+  //     }
+  //     return bcrypt.compare(password, user.password);
+  //   })
+  // then((matched) => {
+  //   if (!matched) {
+  //     Promise.reject(new Error('Неправильные почта или пароль'));
+  //   }
+  //   res.send({ message: 'Все верно!' })
+  // })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password);
+      // аутентификация успешна! пользователь в переменной user
+      // В пейлоуд токена следует записывать только свойство _id, содержащее идентификатор пользователя
+      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+      res.send({ token })
     })
-  then((matched) => {
-    if (!matched) {
-      Promise.reject(new Error('Неправильные почта или пароль'));
-    }
-    res.send({ message: 'Все верно!' })
-  })
     .catch((err) => {
       res
         .status(401)
