@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const auth = require('./middlewares/auth');
 const routerUsers = require('./routes/users.js');
 const routerCards = require('./routes/cards.js');
 const routerNonexistent = require('./routes/nonexistent.js');
@@ -19,7 +20,7 @@ const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// роуты для логина и регистрации
+// роуты для логина и регистрации не требующие авторизации
 app.post('/signup', createUser);
 app.post('/signin', login);
 
@@ -31,8 +32,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', routerUsers);
-app.use('/', routerCards);
+// сначала вызовется auth, а затем, если авторизация успешна, routerUsers
+app.use('/', auth, routerUsers);
+// сначала вызовется auth, а затем, если авторизация успешна, createCard
+app.use('/', auth, routerCards);
 app.use('/', routerNonexistent);
 
 app.listen(PORT, () => {
