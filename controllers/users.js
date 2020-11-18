@@ -1,4 +1,6 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+
 
 const getUsers = (req, res) => {
   User.find({})
@@ -25,8 +27,16 @@ const getUser = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const { name, about, avatar, email, password } = req.body;
+  bcrypt.hash(password, 10)
+    .then(hash => User.create({
+      name: 'Жак-Ив Кусто',
+      about: 'Исследователь',
+      avatar: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+      email,
+      password: hash, // записываем хеш в базу
+    }))
+    // User.create({ name, about, avatar, email, password })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.log(err);
@@ -86,10 +96,33 @@ const updateUserAvatar = (req, res) => {
     });
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+      return bcrypt.compare(password, user.password);
+    })
+  then((matched) => {
+    if (!matched) {
+      Promise.reject(new Error('Неправильные почта или пароль'));
+    }
+    res.send({ message: 'Все верно!' })
+  })
+    .catch((err) => {
+      res
+        .status(401)
+      send({ message: err.message })
+    })
+}
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateUser,
   updateUserAvatar,
+  login,
 };
