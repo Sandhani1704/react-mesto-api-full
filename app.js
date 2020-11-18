@@ -6,6 +6,7 @@ const routerUsers = require('./routes/users.js');
 const routerCards = require('./routes/cards.js');
 const routerNonexistent = require('./routes/nonexistent.js');
 const { login, createUser } = require('./controllers/users.js');
+// const crypto = require('crypto')
 
 const app = express();
 
@@ -37,6 +38,22 @@ app.use('/', auth, routerUsers);
 // сначала вызовется auth, а затем, если авторизация успешна, createCard
 app.use('/', auth, routerCards);
 app.use('/', routerNonexistent);
+
+// здесь обрабатываем все ошибки
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message
+    });
+  next();
+});
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
