@@ -2,6 +2,10 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/ConflictError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 
 const getUsers = (req, res) => {
@@ -107,19 +111,6 @@ const updateUserAvatar = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  // User.findOne({ email })
-  //   .then((user) => {
-  //     if (!user) {
-  //       Promise.reject(new Error('Неправильные почта или пароль'));
-  //     }
-  //     return bcrypt.compare(password, user.password);
-  //   })
-  // then((matched) => {
-  //   if (!matched) {
-  //     Promise.reject(new Error('Неправильные почта или пароль'));
-  //   }
-  //   res.send({ message: 'Все верно!' })
-  // })
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // аутентификация успешна! пользователь в переменной user
@@ -127,16 +118,18 @@ const login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
       res.send({ token })
     })
-    .catch((err) => {
-      res
-        .status(401)
-      send({ message: err.message })
-    })
+    // .catch((err) => {
+    //   res
+    //     .status(401)
+    //   send({ message: err.message })
+    // })
+    .catch(next);
 }
 
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((userById) => {
+      // console.log(userById)
       if (userById === null) {
         throw new NotFoundError('Пользователя нет в базе данных');
       }

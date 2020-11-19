@@ -1,7 +1,8 @@
 const router = require('express').Router(); // создали роутер
+const auth = require('../middlewares/auth');
 
 const {
-  getUsers, getUser, getUserInfo, updateUser, updateUserAvatar, login,
+  getUsers, getUser, getUserInfo, updateUser, updateUserAvatar,
 } = require('../controllers/users');
 
 router.get('/users', getUsers);
@@ -9,7 +10,7 @@ router.get('/users', getUsers);
 router.get('/users/:id', getUser);
 
 // router.post('/users', createUser);
-router.get('/users/me', getUserInfo); // возвращает информацию о текущем пользователе
+router.get('/users/me', auth, getUserInfo); // возвращает информацию о текущем пользователе
 
 router.patch('/users/me', updateUser);
 

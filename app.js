@@ -37,22 +37,16 @@ app.post('/signin', login);
 app.use('/', auth, routerUsers);
 // сначала вызовется auth, а затем, если авторизация успешна, createCard
 app.use('/', auth, routerCards);
+// app.get('/users/me', auth, routerUsers);
 app.use('/', routerNonexistent);
 
 // здесь обрабатываем все ошибки
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
+  res.status(statusCode)
+    .send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message }); // проверяем статус и выставляем сообщение в зависимости от него
 
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message
-    });
-  next();
 });
 
 app.listen(PORT, () => {
