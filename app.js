@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const auth = require('./middlewares/auth');
 const routerUsers = require('./routes/users.js');
 const routerCards = require('./routes/cards.js');
@@ -22,6 +23,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requestLogger); // подключаем логгер запросов
 
 // роуты для логина и регистрации не требующие авторизации
 app.post('/signup', celebrate({
@@ -52,6 +55,8 @@ app.use('/', auth, routerUsers);
 app.use('/', auth, routerCards);
 // app.get('/users/me', auth, routerUsers);
 app.use('/', routerNonexistent);
+
+app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors()); // обработчик ошибок celebrate
 
