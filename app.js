@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const routerUsers = require('./routes/users.js');
 const routerCards = require('./routes/cards.js');
@@ -22,8 +24,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // роуты для логина и регистрации не требующие авторизации
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), createUser);
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), login);
 
 // app.use((req, res, next) => {
 //   req.user = {
@@ -39,6 +52,8 @@ app.use('/', auth, routerUsers);
 app.use('/', auth, routerCards);
 // app.get('/users/me', auth, routerUsers);
 app.use('/', routerNonexistent);
+
+app.use(errors()); // обработчик ошибок celebrate
 
 // здесь обрабатываем все ошибки
 app.use((err, req, res, next) => {

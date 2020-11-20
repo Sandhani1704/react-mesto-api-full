@@ -109,20 +109,18 @@ const updateUserAvatar = (req, res) => {
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      // if (!user.email || !user.password) {
+      //   throw new ConflictError('Неправильные почта или пароль');
+      // }
       // аутентификация успешна! пользователь в переменной user
       // В пейлоуд токена следует записывать только свойство _id, содержащее идентификатор пользователя
       const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
       res.send({ token })
     })
-    // .catch((err) => {
-    //   res
-    //     .status(401)
-    //   send({ message: err.message })
-    // })
     .catch(next);
 }
 
@@ -138,9 +136,9 @@ const getUserInfo = (req, res, next) => {
         .send(userById);
     })
 
-    .catch(() => {
-      throw new NotFoundError('Пользователя нет в базе данных');
-    })
+    // .catch(() => {
+    //   throw new NotFoundError('Пользователя нет в базе данных');
+    // })
 
     .catch(next);
 };
