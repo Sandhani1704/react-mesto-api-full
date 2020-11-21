@@ -32,8 +32,19 @@ const getUser = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { email, password } = req.body;
+  // if (!email || !password) {
+  //   return res.status(400).send({ message: 'невалидные данные' });
+  // }
+  User.findOne({ email })
+    .then((email) => {
+      if (email) {
+        throw new ConflictError('Пользователь с таким email уже зарегистрирован');
+      }
+    })
+    .catch(next);
+
   bcrypt.hash(password, 10)
     .then(hash => User.create({
       name: 'Жак-Ив Кусто',
@@ -42,7 +53,6 @@ const createUser = (req, res) => {
       email,
       password: hash, // записываем хеш в базу
     }))
-    // User.create({ name, about, avatar, email, password })
     .then((user) => res.status(200).send({
       data: {
         name: user.name,
@@ -51,17 +61,43 @@ const createUser = (req, res) => {
         email: user.email,
       },
     }))
-    .catch((err) => {
-      console.log(err);
-      if (err.name === 'ValidationError') {
-        res
-          .status(400)
-          .send({ message: 'переданы некорректные данные в метод' });
-        return;
-      }
-      res.status(500).send({ message: 'На сервере произошла ошибка' });
-    });
+    // .catch((err) => {
+    //   if (err.name === 'ValidationError') {
+    //     res
+    //       .status(400)
+    //       .send({ message: 'переданы некорректные данные в метод' });
+    //     return;
+    //   }
+    //   res.status(500).send({ message: 'На сервере произошла ошибка' });
+    // });
+    .catch(next);
 };
+
+// const createUser = (req, res, next) => {
+//   const {
+//     name,
+//     about,
+//     avatar,
+//     email,
+//     password,
+//   } = req.body;
+
+//   return bcrypt.hash(password, 10, (error, hash) => User.findOne({ email })
+//     .then((user) => {
+//       if (user) return next(new ConflictError('Пользователь с таким email уже есть'));
+
+//       return User.create({
+//         name,
+//         about,
+//         avatar,
+//         email,
+//         password: hash,
+//       })
+//         .then(() => res.status(200).send({ message: `Пользователь ${email} успешно создан!` }))
+//         .catch(() => new BadRequestError('Ошибка в запросе'));
+//     })
+//     .catch(next));
+// };
 
 const updateUser = (req, res) => {
   const { _id } = req.user;
