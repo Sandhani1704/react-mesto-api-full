@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -9,7 +10,6 @@ const routerUsers = require('./routes/users.js');
 const routerCards = require('./routes/cards.js');
 const routerNonexistent = require('./routes/nonexistent.js');
 const { login, createUser } = require('./controllers/users.js');
-// const crypto = require('crypto')
 
 const app = express();
 
@@ -43,7 +43,8 @@ app.post('/signin', celebrate({
 
 // app.use((req, res, next) => {
 //   req.user = {
-//     _id: '5f947b6f7e5bcb276032c34d', // вставьте сюда _id созданного в предыдущем пункте пользователя
+// вставьте сюда _id созданного в предыдущем пункте пользователя
+//     _id: '5f947b6f7e5bcb276032c34d',
 //   };
 
 //   next();
@@ -61,12 +62,11 @@ app.use(errorLogger); // подключаем логгер ошибок
 app.use(errors()); // обработчик ошибок celebrate
 
 // здесь обрабатываем все ошибки
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
   res.status(statusCode)
     .send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message }); // проверяем статус и выставляем сообщение в зависимости от него
-
 });
 
 app.listen(PORT, () => {

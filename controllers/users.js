@@ -1,12 +1,14 @@
 const bcrypt = require('bcryptjs');
-const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const NotFoundError = require('../errors/NotFoundError');
-const BadRequestError = require('../errors/BadRequestError');
-const ConflictError = require('../errors/ConflictError');
-const ForbiddenError = require('../errors/ForbiddenError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
+const User = require('../models/user');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
+const NotFoundError = require('../errors/NotFoundError');
+// const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/ConflictError');
+// const ForbiddenError = require('../errors/ForbiddenError');
+// const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -38,15 +40,15 @@ const createUser = (req, res, next) => {
   //   return res.status(400).send({ message: 'невалидные данные' });
   // }
   User.findOne({ email })
-    .then((email) => {
-      if (email) {
+    .then((user) => {
+      if (user) {
         throw new ConflictError('Пользователь с таким email уже зарегистрирован');
       }
     })
     .catch(next);
 
   bcrypt.hash(password, 10)
-    .then(hash => User.create({
+    .then((hash) => User.create({
       name: 'Жак-Ив Кусто',
       about: 'Исследователь',
       avatar: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
@@ -153,12 +155,15 @@ const login = (req, res, next) => {
       //   throw new ConflictError('Неправильные почта или пароль');
       // }
       // аутентификация успешна! пользователь в переменной user
-      // В пейлоуд токена следует записывать только свойство _id, содержащее идентификатор пользователя
-      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
-      res.send({ token })
+      // В пейлоуд токена следует записывать только свойство _id
+      // содержащее идентификатор пользователя
+      const token = jwt.sign({ _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret',
+        { expiresIn: '7d' });
+      res.send({ token });
     })
     .catch(next);
-}
+};
 
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
@@ -172,13 +177,12 @@ const getUserInfo = (req, res, next) => {
         .send(userById);
     })
 
-    // .catch(() => {
-    //   throw new NotFoundError('Пользователя нет в базе данных');
-    // })
+  // .catch(() => {
+  //   throw new NotFoundError('Пользователя нет в базе данных');
+  // })
 
     .catch(next);
 };
-
 
 module.exports = {
   getUsers,

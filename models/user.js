@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (v) => isEmail(v),
       message: 'Неправильный формат почты',
-    }
+    },
   },
 
   password: {
@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
     select: false,
-  }
+  },
 });
 
 userSchema.statics.findUserByCredentials = function (email, password) {
@@ -58,9 +58,8 @@ userSchema.statics.findUserByCredentials = function (email, password) {
             throw new UnauthorizedError('Неправильные почта или пароль');
           }
           return user;
-        })
-    })
-
+        });
+    });
 };
 
 // создаём модель и экспортируем её
