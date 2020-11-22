@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -33,6 +34,7 @@ const createCard = (req, res) => {
     name, link, likes, createdAt, owner: _id,
   })
     .then((card) => res.status(200).send({ data: card }))
+    // .then((card) => res.status(200).send(card))
     .catch((err) => {
       // console.log(err);
       if (err.name === 'ValidationError') {
@@ -45,22 +47,27 @@ const createCard = (req, res) => {
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenError({ message: 'Удалять можно только свои карточки' });
+      }
       if (!card) {
         return res.status(404).send({ message: 'Нет карточки с таким id' });
       }
-      return res.send(card);
+      // return res.send(card);
+      return res.status(200).send({ message: 'Карточка удалена' });
     })
-    .catch((err) => {
-      // console.log(err);
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'невалидный id' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
-      }
-    });
+    // .catch((err) => {
+    //   // console.log(err);
+    //   if (err.name === 'CastError') {
+    //     res.status(400).send({ message: 'невалидный id' });
+    //   } else {
+    //     res.status(500).send({ message: 'На сервере произошла ошибка' });
+    //   }
+    // });
+    .catch(next);
 };
 
 const likeCard = (req, res) => Card.findByIdAndUpdate(
