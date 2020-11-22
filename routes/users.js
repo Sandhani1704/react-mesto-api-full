@@ -8,6 +8,8 @@ const {
 
 router.get('/users', getUsers);
 
+router.get('/users/me', auth, getUserInfo); // возвращает информацию о текущем пользователе
+
 router.get('/users/:id', celebrate({
   params: Joi.object().keys({
     _id: Joi.string().required().hex(),
@@ -15,7 +17,6 @@ router.get('/users/:id', celebrate({
 }), getUser);
 
 // router.post('/users', createUser);
-router.get('/users/me', auth, getUserInfo); // возвращает информацию о текущем пользователе
 
 router.patch('/users/me', celebrate({
   body: Joi.object().keys({

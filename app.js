@@ -35,6 +35,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(requestLogger); // подключаем логгер запросов
 
+// app.get('/crash-test', () => {
+//   setTimeout(() => {
+//     throw new Error('Сервер сейчас упадёт');
+//   }, 0);
+// });
+
 // роуты для логина и регистрации не требующие авторизации
 app.post('/signup', celebrate({
   body: Joi.object().keys({
