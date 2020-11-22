@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+// const cors = require('cors');
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -13,6 +13,12 @@ const routerNonexistent = require('./routes/nonexistent.js');
 const { login, createUser } = require('./controllers/users.js');
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -25,7 +31,8 @@ const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cors());
+// app.use(cors());
+
 app.use(requestLogger); // подключаем логгер запросов
 
 // роуты для логина и регистрации не требующие авторизации
