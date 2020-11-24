@@ -28,13 +28,14 @@ const getCardById = (req, res) => {
 const createCard = (req, res) => {
   const { _id } = req.user;
   const {
-    name, link, likes, createdAt,
+    name, link,
   } = req.body;
   Card.create({
-    name, link, likes, createdAt, owner: _id,
+    // name, link, likes, createdAt, owner: _id,
+    name, link, owner: _id,
   })
-    .then((card) => res.status(200).send({ data: card }))
-    // .then((card) => res.status(200).send(card))
+    // .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       // console.log(err);
       if (err.name === 'ValidationError') {
