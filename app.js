@@ -12,6 +12,9 @@ const routerCards = require('./routes/cards.js');
 const routerNonexistent = require('./routes/nonexistent.js');
 const { login, createUser } = require('./controllers/users.js');
 
+// Слушаем 3000 порт
+const { PORT = 3000 } = process.env;
+
 const app = express();
 
 app.use(cors());
@@ -28,12 +31,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-// Слушаем 3000 порт
-const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// app.use(cors());
 
 app.use(requestLogger); // подключаем логгер запросов
 
@@ -78,12 +77,14 @@ app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors()); // обработчик ошибок celebrate
 
-// здесь обрабатываем все ошибки
-app.use((err, req, res) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-  res.status(statusCode)
-    .send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message }); // проверяем статус и выставляем сообщение в зависимости от него
+app.use((err, req, res, next) => {
+  if (err.status) {
+    res.status(err.status).send({ message: err.message });
+    return;
+  }
+  console.log(err.name);
+  res.status(500).send({ message: `${err.message}` });
+  next();
 });
 
 app.listen(PORT, () => {

@@ -49,10 +49,16 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  // Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
+      console.log(card);
       if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError({ message: 'Удалять можно только свои карточки' });
+        console.log(card.owner.toString());
+        console.log(req.user._id);
+        // throw new ForbiddenError('Удалять можно только свои карточки');
+        throw new ForbiddenError('Удалять можно только свои карточки');
+        // console.log(new ForbiddenError('Удалять можно только свои карточки'));
       }
       if (!card) {
         return res.status(404).send({ message: 'Нет карточки с таким id' });
