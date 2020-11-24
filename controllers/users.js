@@ -177,9 +177,9 @@ const getUserInfo = (req, res, next) => {
         .send(userById);
     })
 
-  // .catch(() => {
-  //   throw new NotFoundError('Пользователя нет в базе данных');
-  // })
+    .catch(() => {
+      throw new NotFoundError('Пользователя нет в базе данных');
+    })
 
     .catch(next);
 };
