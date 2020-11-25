@@ -57,15 +57,6 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-// app.use((req, res, next) => {
-//   req.user = {
-// вставьте сюда _id созданного в предыдущем пункте пользователя
-//     _id: '5f947b6f7e5bcb276032c34d',
-//   };
-
-//   next();
-// });
-
 // сначала вызовется auth, а затем, если авторизация успешна, routerUsers
 app.use('/', auth, routerUsers);
 // сначала вызовется auth, а затем, если авторизация успешна, createCard
@@ -82,8 +73,7 @@ app.use((err, req, res, next) => {
     res.status(err.status).send({ message: err.message });
     return;
   }
-  console.log(err.name);
-  res.status(500).send({ message: `${err.message}` });
+  res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
   next();
 });
 
