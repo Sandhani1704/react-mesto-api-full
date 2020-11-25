@@ -1,0 +1,35 @@
+.popup__info-image {
+    object-fit: contain;
+    margin: 0 auto;
+    margin-bottom: 32px;
+    margin-top: 26px;
+    object-position: center;
+    justify-content: center;
+    max-width: 120px;
+    max-height: 120px;
+    }
+    
+    @media screen and (max-width: 768px) {
+        .popup__info-image {
+            max-width: 100px;
+            max-height: 100px;
+            margin-bottom: 27px;
+        }
+    }
+    
+    @media screen and (max-width: 500px) {
+        .popup__info-image {
+            max-width: 90px;
+            max-height: 90px;
+            margin-bottom: 22px;
+        }
+    }
+    
+    @media screen and (max-width: 375px) {
+        .popup__info-image {
+            max-width: 80px;
+            max-height: 80px;
+            margin: 10px auto 32px;
+        }
+    }
+
