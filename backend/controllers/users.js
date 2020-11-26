@@ -26,7 +26,9 @@ const getUser = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { email, password } = req.body;
+  const {
+    email, password, name, about, avatar,
+  } = req.body;
   // if (!email || !password) {
   //   return res.status(400).send({ message: 'невалидные данные' });
   // }
@@ -40,9 +42,9 @@ const createUser = (req, res, next) => {
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name: 'Жак-Ив Кусто',
-      about: 'Исследователь',
-      avatar: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+      name,
+      about,
+      avatar,
       email,
       password: hash, // записываем хеш в базу
     }))

@@ -12,11 +12,9 @@ router.get('/users/me', auth, getUserInfo); // возвращает информ
 
 router.get('/users/:id', celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().required().hex(),
+    id: Joi.string().required().length(24).hex(),
   }),
 }), getUser);
-
-// router.post('/users', createUser);
 
 router.patch('/users/me', celebrate({
   body: Joi.object().keys({
