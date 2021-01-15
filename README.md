@@ -9,10 +9,10 @@
 
 * Запустить проект на локальном сервере: `npm start`;
 
-* Запускает сервер с hot-reload: `npm run dev`.
+* Запустить сервер с hot-reload: `npm run dev`.
 
-[Доменное имя front-end](https://galkina.students.nomoreparties.xyz/) 
+[Ссылка на проект](https://galkina.students.nomoreparties.space/) 
 
-[Доменное имя back-end](https://api.galkina.students.nomoreparties.xyz/)
+API: https://api.galkina.students.nomoreparties.space/
 
-### Публичный IP-адрес: 178.154.234.108
+### Публичный IP-адрес: 130.193.56.172

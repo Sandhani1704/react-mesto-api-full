@@ -237,6 +237,28 @@ function App() {
     setIsImagePopupOpen(true);
   }
 
+  React.useEffect(() => {
+    function handleEscClose(evt) {
+        if (evt.key === 'Escape') {
+            closeAllPopups();
+        }
+    }
+
+    function closeByOverlayClick(evt) {
+        if (evt.target.classList.contains('popup__overlay')) {
+            closeAllPopups();
+        }
+    }
+
+    document.addEventListener('keydown', handleEscClose);
+    document.addEventListener('click', closeByOverlayClick);
+
+    return () => {
+        document.removeEventListener('keydown', handleEscClose);
+        document.removeEventListener('click', closeByOverlayClick);
+    };
+});
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">

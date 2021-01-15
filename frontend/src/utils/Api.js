@@ -117,7 +117,7 @@ export default class Api {
 }
 
 const api = new Api({
-  baseUrl: 'https://api.galkina.students.nomoreparties.xyz',
+  baseUrl: 'https://api.galkina.students.nomoreparties.space',
   headers: {
     'Content-Type': 'application/json',
   }

@@ -62,9 +62,9 @@ app.post('/signin', celebrate({
 
 // сначала вызовется auth, а затем, если авторизация успешна, routerUsers
 app.use('/', auth, routerUsers);
-// сначала вызовется auth, а затем, если авторизация успешна, createCard
+// сначала вызовется auth, а затем, если авторизация успешна, routerCards
 app.use('/', auth, routerCards);
-// app.get('/users/me', auth, routerUsers);
+
 app.use('/', routerNonexistent);
 
 app.use(errorLogger); // подключаем логгер ошибок
